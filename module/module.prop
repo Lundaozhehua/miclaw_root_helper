@@ -1,0 +1,7 @@
+id=miclaw_root_helper
+name=Miclaw Root Helper
+version=v3.0
+versionCode=300
+author=xiaozhi
+description=NC 9999 root shell listener + host-mcp bridge for miclaw AI assistant.
+updateJson=

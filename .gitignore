@@ -1,0 +1,5 @@
+*.zip
+*.deb
+host-mcp
+.DS_Store
+Thumbs.db

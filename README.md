@@ -1,143 +1,108 @@
 # Miclaw Root Helper
 
-[English](#english) | [中文](#中文)
+KSU/Magisk 模块：开机自启 nc 9999 root shell + host-mcp MCP bridge，**无需 Termux:Boot**。
 
----
+## 功能
 
-## 中文
+- 🔧 **nc 9999**：开机自动启动 root shell 监听（127.0.0.1:9999）
+- 🌐 **host-mcp**：MCP bridge 服务（127.0.0.1:8765），供 miclaw AI 助手调用
+- 📁 **自动部署**：模块内置 host-mcp 二进制 + 配置，开机自动部署到 `/data/adb/host-mcp/`
+- 🔇 **完全静默**：无 UI 弹出，无 Termux Activity 启动
+- 📦 **安装顺序无关**：模块和 Termux 先装后装均可
 
-### 简介
+## 前置条件
 
-Miclaw Root Helper 是一个 KernelSU / Magisk 模块，为 [miclaw](https://github.com/anthropics/claude-code) AI 助手提供 root 权限执行能力。
+- KSU (KernelSU) 或 Magisk
+- Android 设备
+- [可选] Termux（用于扩展 bash/python/node 工具）
 
-### 功能
+## 安装
 
-- **NC Root Shell** — 在 `127.0.0.1:9999` 监听，提供 root shell 访问
-- **host-mcp 桥接** — 自动启动 host-mcp 服务，为 miclaw 提供 MCP 工具调用能力
-- **开机自启** — service.sh 在开机时自动启动所有服务
-- **自动恢复** — 服务崩溃后自动重启
+1. 下载最新 release zip
+2. 在 KSU/Magisk 管理器中刷入
+3. 重启
+4. 配置 miclaw MCP 连接（见下方）
 
-### 前置条件
+## miclaw MCP 配置
 
-- Android 设备已 root（KernelSU 或 Magisk）
-- 已安装 [miclaw](https://github.com/anthropics/claude-code) AI 助手
+在 miclaw 中配置 `mcp/mcp_servers.json`：
 
-### 安装
-
-#### 方法一：下载预编译包
-
-1. 从 [Releases](../../releases) 下载最新 zip
-2. 在 KSU / Magisk 管理器中刷入
-3. 重启设备
-
-#### 方法二：从源码构建
-
-```bash
-# 克隆仓库
-git clone https://github.com/YOUR_USERNAME/miclaw_root_helper.git
-cd miclaw_root_helper
-
-# 运行构建脚本（自动下载 host-mcp 二进制）
-chmod +x build.sh
-./build.sh v3.0
-
-# 生成的 zip 文件在当前目录
+```json
+{
+    "servers": [
+        {
+            "name": "host-mcp",
+            "url": "http://127.0.0.1:8765/mcp",
+            "headers": {
+                "Authorization": "Bearer <token from config/token>"
+            }
+        }
+    ]
+}
 ```
 
-### 文件结构
+## 目录结构
 
 ```
-miclaw_root_helper/
-├── module/
-│   ├── module.prop          # 模块元数据
-│   ├── service.sh           # 开机启动脚本
-│   ├── uninstall.sh         # 卸载清理脚本
-│   ├── META-INF/            # KSU/Magisk 刷入脚本
-│   └── host-mcp             # (构建时自动下载，不包含在仓库中)
-├── build.sh                 # 构建脚本
-├── LICENSE                  # MIT License
-└── README.md                # 本文件
+/
+├── module/              # KSU 模块源码
+│   ├── META-INF/        # 刷机包结构
+│   ├── module.prop      # 模块信息
+│   ├── service.sh       # 开机启动脚本
+│   └── uninstall.sh     # 卸载清理
+├── config/              # host-mcp 配置
+│   ├── config.json      # host-mcp 服务配置
+│   └── token            # API 认证 token
+├── setup.sh             # 手动配置脚本
+├── build.sh             # 构建脚本
+├── LICENSE
+└── README.md
 ```
 
-### 工作原理
+## 启动流程
 
-1. 设备开机后，`service.sh` 等待 `sys.boot_completed`
-2. 启动 NC 监听器：`toybox nc -s 127.0.0.1 -p 9999 -L /system/bin/sh -l`
-3. 启动 host-mcp 服务：`host-mcp serve`（监听 `127.0.0.1:8765`）
-4. miclaw 通过 host-mcp 获得 root shell 执行能力
-
-### 端口说明
-
-| 服务 | 端口 | 用途 |
-|------|------|------|
-| NC Root Shell | 127.0.0.1:9999 | 直接 root shell 访问 |
-| host-mcp | 127.0.0.1:8765 | MCP 工具调用桥接 |
-
-### 致谢
-
-- [host-mcp](https://github.com/mark3labs/mcphost) — MCP 桥接服务
-- [KernelSU](https://github.com/tiann/KernelSU) — Android root 方案
-
-### License
-
-[MIT](LICENSE)
-
----
-
-## English
-
-### Introduction
-
-Miclaw Root Helper is a KernelSU / Magisk module that provides root execution capabilities for the [miclaw](https://github.com/anthropics/claude-code) AI assistant.
-
-### Features
-
-- **NC Root Shell** — Listens on `127.0.0.1:9999` for root shell access
-- **host-mcp bridge** — Auto-starts host-mcp service for MCP tool calling
-- **Auto-start on boot** — service.sh starts all services on boot
-- **Auto-recovery** — Services restart automatically after crash
-
-### Prerequisites
-
-- Rooted Android device (KernelSU or Magisk)
-- [miclaw](https://github.com/anthropics/claude-code) AI assistant installed
-
-### Installation
-
-#### Option 1: Download pre-built package
-
-1. Download the latest zip from [Releases](../../releases)
-2. Flash via KSU / Magisk manager
-3. Reboot
-
-#### Option 2: Build from source
-
-```bash
-git clone https://github.com/YOUR_USERNAME/miclaw_root_helper.git
-cd miclaw_root_helper
-chmod +x build.sh
-./build.sh v3.0
+```
+等开机完成 → sleep 10 → nc 9999 启动 → 部署 host-mcp → mkdir Termux 目录 → 启动 host-mcp
 ```
 
-### How it works
+## Changelog
 
-1. On boot, `service.sh` waits for `sys.boot_completed`
-2. Starts NC listener: `toybox nc -s 127.0.0.1 -p 9999 -L /system/bin/sh -l`
-3. Starts host-mcp service: `host-mcp serve` (listens on `127.0.0.1:8765`)
-4. miclaw uses host-mcp to execute commands with root privileges
+### v5.3.3 (2026-07-31)
+- ✅ service.sh 加 `mkdir -p` 解决安装顺序问题（模块先装/Termux 先装均可）
+- ✅ 删除 Termux 自动初始化逻辑（不再闪 UI）
+- ✅ 完全静默后台运行
 
-### Ports
+### v5.3.2
+- 固定 config.json 和 token 打包
 
-| Service | Port | Purpose |
-|---------|------|---------|
-| NC Root Shell | 127.0.0.1:9999 | Direct root shell access |
-| host-mcp | 127.0.0.1:8765 | MCP tool calling bridge |
+### v5.3.1
+- service.sh 清理冗余逻辑
 
-### Acknowledgments
+### v5.3.0
+- 去掉 Termux 自动装包，简化启动流程
 
-- [host-mcp](https://github.com/mark3labs/mcphost) — MCP bridge service
-- [KernelSU](https://github.com/tiann/KernelSU) — Android root solution
+### v5.2.0
+- Termux 自动初始化增强
 
-### License
+### v5.1.0
+- host-mcp 迁移到 `/data/adb/host-mcp/`（解决 SELinux 问题）
 
-[MIT](LICENSE)
+### v5.0.0
+- 初版：nc 9999 + host-mcp + Termux 自动初始化
+
+## 原理
+
+模块开机后执行 `service.sh`：
+1. `nc -ll -p 9999 -e /system/bin/sh` 提供 root shell
+2. 将内置的 host-mcp 二进制和配置部署到 `/data/adb/host-mcp/`
+3. 启动 `host-mcp serve` 提供 MCP 协议服务
+4. miclaw 通过 localhost 连接 host-mcp 执行 root 命令
+
+## 致谢
+
+- [host-mcp](https://github.com/mark3labs/mcphost) - MCP bridge 服务
+- [KernelSU](https://github.com/tiann/KernelSU) - Android root 方案
+
+## License
+
+MIT

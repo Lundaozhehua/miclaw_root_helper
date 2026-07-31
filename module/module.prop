@@ -1,7 +1,6 @@
 id=miclaw_root_helper
 name=Miclaw Root Helper
-version=v3.0
-versionCode=300
-author=xiaozhi
-description=NC 9999 root shell listener + host-mcp bridge for miclaw AI assistant.
-updateJson=
+version=v5.3.3
+versionCode=533
+author=miclaw
+description=NC 9999 root shell listener + host-mcp MCP bridge. Auto-starts: no Termux:Boot needed.

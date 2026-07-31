@@ -100,8 +100,10 @@ KSU/Magisk 模块：开机自启 nc 9999 root shell + host-mcp MCP bridge，**�
 
 ## 致谢
 
-- [host-mcp](https://github.com/mark3labs/mcphost) - MCP bridge 服务
-- [KernelSU](https://github.com/tiann/KernelSU) - Android root 方案
+- **[host-mcp](https://github.com/Thiasap/host-mcp)** by [Thiasap](https://github.com/Thiasap) — Streamable HTTP MCP server for Termux/Linux/WSL，本模块的核心组件
+- [KernelSU](https://github.com/tiann/KernelSU) — Android root 方案
+
+> ⚠️ host-mcp 为第三方项目，本仓库仅将其打包为 KSU 模块方便使用。host-mcp 二进制文件的版权归原作者所有。
 
 ## License
 

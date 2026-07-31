@@ -1,0 +1,39 @@
+{
+  "version": 2,
+  "profile": "termux",
+  "listen": "127.0.0.1:8765",
+  "path": "/mcp",
+  "mcp_session_mode": "stateless",
+  "exec_enabled": false,
+  "roots": [
+    {"id": "termux-home", "path": "/data/adb/host-mcp", "description": "Termux application home", "read_only": false, "write_eligible": true, "kind": "termux-home"},
+    {"id": "termux-prefix", "path": "/data/data/com.termux/files/usr", "description": "Termux installation prefix", "read_only": true, "write_eligible": false, "kind": "termux-prefix"},
+    {"id": "termux-storage-shared", "path": "/storage/emulated/0", "description": "Shared storage", "read_only": true, "write_eligible": true, "kind": "shared-storage"}
+  ],
+  "permissions": [
+    {"root": "termux-home", "operation": "read", "path": "."},
+    {"root": "termux-home", "operation": "write", "path": "."},
+    {"root": "termux-home", "operation": "delete", "path": "."},
+    {"root": "termux-prefix", "operation": "read", "path": "."},
+    {"root": "termux-storage-shared", "operation": "read", "path": "."}
+  ],
+  "trusted_shell": {
+    "enabled": true,
+    "executable": "/system/bin/sh",
+    "cwds": [{"root": "termux-home", "path": "."}]
+  },
+  "limits": {
+    "max_body_bytes": 1048576,
+    "max_read_bytes": 1048576,
+    "max_write_bytes": 1048576,
+    "max_output_bytes": 1048576,
+    "max_list_entries": 1000,
+    "max_search_results": 200,
+    "max_search_file_size": 2097152,
+    "max_exec_args": 32,
+    "max_arg_bytes": 4096,
+    "exec_timeout_seconds": 30,
+    "request_timeout_seconds": 60,
+    "session_timeout_seconds": 900
+  }
+}
